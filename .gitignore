@@ -1,0 +1,31 @@
+# Répertoires générés par sbt
+target/
+project/target/
+project/project/
+
+# Fichiers de configuration IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Fichiers de configuration VS Code / Metals
+.vscode/
+.metals/
+.bloop/
+
+# Fichiers de configuration Eclipse / Scala IDE
+.classpath
+.project
+.settings/
+.cache/
+
+# Fichiers systèmes
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Fichiers d'environnement
+.env

@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  dev:
+    build: .
+    volumes:
+      - .:/project
+    working_dir: /project
+    stdin_open: true
+    tty: true
+    command: sbt
