@@ -109,3 +109,22 @@ class LanguageModelSpec extends munit.FunSuite:
     // "b" est suivi de "c" 2 fois, rien d'autre
     assertEqualsDouble(dist.get("c"), 1.0, 1e-9)
   }
+
+  // ── topNWords ──────────────────────────────────────────────────────────────
+
+  test("topNWords returns n most frequent words") {
+    val text   = "le chat mange le fromage le chat dort"
+    val result = LanguageModel.topNWords(text, 2)
+    assertEquals(result, List("le", "chat"))
+  }
+
+  test("topNWords returns all words when n > distinct words") {
+    val text   = "a b c"
+    val result = LanguageModel.topNWords(text, 10)
+    assertEquals(result.toSet, Set("a", "b", "c"))
+    assertEquals(result.length, 3)
+  }
+
+  test("topNWords on empty text returns Nil") {
+    assertEquals(LanguageModel.topNWords("", 5), Nil)
+  }

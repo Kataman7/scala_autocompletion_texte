@@ -35,3 +35,10 @@ Pour aller plus loin Cette partie est optionnelle : vous pouvez utiliser
 la fonction précédente pour coder un générateur automatique de texte (les
 textes produits n’auront aucun sens, mais ils auront l’apparence d’un texte
 à peu près correct grammaticalement).
+
+
+pas de variable
+pas de structure mutable
+fonctionnel pure
+pas de boucle while
+pas de truc itératif ?
