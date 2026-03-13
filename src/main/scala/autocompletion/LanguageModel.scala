@@ -26,19 +26,71 @@ object LanguageModel:
   // ── Normalisation du texte ──────────────────────────────────────────────────
 
   /**
-   * Tokenise un texte en liste de mots en minuscules, en retirant la
-   * ponctuation et les séquences vides.
+   * Indique si un caractère est une lettre valide (minuscule française ou tiret/apostrophe).
+   * Implémenté récursivement sur une liste de plages de caractères autorisées.
+   */
+  private def isValidChar(c: Char): Boolean =
+    def check(ranges: List[(Char, Char)]): Boolean = ranges match
+      case Nil               => false
+      case (lo, hi) :: rest  => if c >= lo && c <= hi then true else check(rest)
+    check(List(
+      ('a', 'z'),
+      ('à', 'ä'),   // à á â ã ä
+      ('è', 'ë'),   // è é ê ë
+      ('î', 'ï'),
+      ('ô', 'ô'),
+      ('ù', 'ü'),   // ù ú û ü
+      ('ç', 'ç'),
+      ('\'', '\''),
+      ('-', '-')
+    ))
+
+  /**
+   * Convertit un caractère en son équivalent minuscule.
+   * Gère les majuscules ASCII et les majuscules accentuées françaises.
+   */
+  private def toLower(c: Char): Char =
+    if c >= 'A' && c <= 'Z' then (c + 32).toChar
+    else c match
+      case 'À' | 'Â'         => 'â'   // simplifie À→â, Â→â
+      case 'Ä'               => 'ä'
+      case 'É' | 'È' | 'Ê'  => 'é'
+      case 'Ë'               => 'ë'
+      case 'Î'               => 'î'
+      case 'Ï'               => 'ï'
+      case 'Ô'               => 'ô'
+      case 'Ù' | 'Û'         => 'û'
+      case 'Ü'               => 'ü'
+      case 'Ç'               => 'ç'
+      case _                 => c
+
+  /**
+   * Tokenise un texte en liste de mots en minuscules.
+   * Seuls les caractères valides (lettres françaises, tiret, apostrophe) sont conservés.
+   * Les séparations se font sur tout caractère non valide (espaces, ponctuation, etc.).
+   * Implémentation récursive pure, sans regex ni bibliothèque externe.
    *
    * @param text le texte brut
    * @return la liste ordonnée des tokens
    */
   def tokenize(text: String): List[String] =
-    text
-      .toLowerCase
-      .split("\\s+")
-      .toList
-      .map(w => w.replaceAll("[^a-zàâäéèêëîïôùûüç'\\-]", ""))
-      .filter(_.nonEmpty)
+
+    /** Accumule les caractères d'un mot en cours, avance récursivement sur `chars`. */
+    def loop(chars: List[Char], currentWord: List[Char], acc: List[String]): List[String] =
+      chars match
+        case Nil =>
+          val words = if currentWord.isEmpty then acc else currentWord.reverse.mkString :: acc
+          words.reverse
+        case c :: rest =>
+          val lc = toLower(c)
+          if isValidChar(lc) then
+            loop(rest, lc :: currentWord, acc)
+          else
+            // séparateur : on ferme le mot en cours si non vide
+            val newAcc = if currentWord.isEmpty then acc else currentWord.reverse.mkString :: acc
+            loop(rest, Nil, newAcc)
+
+    loop(text.toList, Nil, Nil)
 
   // ── Construction des n-grammes ──────────────────────────────────────────────
 

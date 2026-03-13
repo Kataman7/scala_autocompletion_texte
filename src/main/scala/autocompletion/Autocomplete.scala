@@ -11,8 +11,6 @@ package autocompletion
  */
 object Autocomplete:
 
-  import LanguageModel.{Model, Distribution}
-
   // ── Extraction du contexte ──────────────────────────────────────────────────
 
   /**
@@ -36,7 +34,7 @@ object Autocomplete:
    * @param k    le nombre de suggestions souhaitées
    * @return liste de paires (mot, probabilité) triée par probabilité décroissante
    */
-  def topK(dist: Distribution, k: Int): List[(String, Double)] =
+  def topK(dist: LanguageModel.Distribution, k: Int): List[(String, Double)] =
     dist.toList
       .sortBy { case (_, prob) => -prob }
       .take(k)
@@ -55,7 +53,7 @@ object Autocomplete:
    * @param n        la taille du n-gramme utilisé lors de l'apprentissage
    * @return Some(mot) si une suggestion existe, None sinon
    */
-  def nextWord(model: Model, sentence: String, n: Int = 2): Option[String] =
+  def nextWord(model: LanguageModel.Model, sentence: String, n: Int = 2): Option[String] =
     val tokens = LanguageModel.tokenize(sentence)
     suggestWithBackoff(model, tokens, n).map(_._1)
 
@@ -69,7 +67,7 @@ object Autocomplete:
    * @return une liste de mots triée par probabilité décroissante
    */
   def topNextWords(
-      model: Model,
+      model: LanguageModel.Model,
       sentence: String,
       k: Int = 3,
       n: Int = 2
@@ -89,7 +87,7 @@ object Autocomplete:
    * @return Some((mot, probabilité)) ou None si aucune suggestion n'est possible
    */
   private def suggestWithBackoff(
-      model: Model,
+      model: LanguageModel.Model,
       tokens: List[String],
       n: Int
   ): Option[(String, Double)] =
@@ -104,7 +102,7 @@ object Autocomplete:
    * Même logique de back-off, mais retourne les `k` meilleures suggestions.
    */
   private def suggestTopKWithBackoff(
-      model: Model,
+      model: LanguageModel.Model,
       tokens: List[String],
       k: Int,
       n: Int
@@ -132,7 +130,7 @@ object Autocomplete:
    * @return le texte généré (amorce + mots générés)
    */
   def generateText(
-      model: Model,
+      model: LanguageModel.Model,
       seed: String,
       maxWords: Int,
       n: Int = 2
