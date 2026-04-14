@@ -2,8 +2,6 @@ package autocompletion
 
 class TrieSpec extends munit.FunSuite:
 
-  // ── empty ──────────────────────────────────────────────────────────────────
-
   test("empty trie has no value at root") {
     val t = Trie.empty[Int]
     assertEquals(Trie.lookup(t, ""), None)
@@ -13,8 +11,6 @@ class TrieSpec extends munit.FunSuite:
     val t = Trie.empty[String]
     assertEquals(Trie.lookup(t, "hello"), None)
   }
-
-  // ── insert / lookup ────────────────────────────────────────────────────────
 
   test("insert then lookup single key returns value") {
     val t = Trie.insert(Trie.empty[Int], "chat", 42)
@@ -61,8 +57,6 @@ class TrieSpec extends munit.FunSuite:
     val _  = Trie.insert(t0, "chat", 1)
     assertEquals(Trie.lookup(t0, "chat"), None)
   }
-
-  // ── withPrefix ─────────────────────────────────────────────────────────────
 
   test("withPrefix returns all entries sharing a prefix") {
     val t = List("chat" -> 1, "chien" -> 2, "souris" -> 3)

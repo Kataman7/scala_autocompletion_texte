@@ -2,8 +2,6 @@ package autocompletion
 
 class LanguageModelSpec extends munit.FunSuite:
 
-  // ── tokenize ───────────────────────────────────────────────────────────────
-
   test("tokenize splits on whitespace and lowercases") {
     assertEquals(
       LanguageModel.tokenize("Le Chat MANGE"),
@@ -25,8 +23,6 @@ class LanguageModelSpec extends munit.FunSuite:
   test("tokenize empty string returns Nil") {
     assertEquals(LanguageModel.tokenize(""), Nil)
   }
-
-  // ── extractNGrams ──────────────────────────────────────────────────────────
 
   test("extractNGrams n=1 produces unigram pairs") {
     val tokens = List("a", "b", "c")
@@ -55,8 +51,6 @@ class LanguageModelSpec extends munit.FunSuite:
     assertEquals(LanguageModel.extractNGrams(Nil, 1), Nil)
   }
 
-  // ── countNGrams ────────────────────────────────────────────────────────────
-
   test("countNGrams counts occurrences correctly") {
     val ngrams = List(
       List("le") -> "chat",
@@ -67,8 +61,6 @@ class LanguageModelSpec extends munit.FunSuite:
     assertEquals(counts("le")("chat"), 2)
     assertEquals(counts("le")("chien"), 1)
   }
-
-  // ── normalize ──────────────────────────────────────────────────────────────
 
   test("normalize produces probabilities that sum to 1") {
     val counts = Map("le" -> Map("chat" -> 2, "chien" -> 2))
@@ -82,14 +74,11 @@ class LanguageModelSpec extends munit.FunSuite:
     assertEqualsDouble(dist("mange"), 1.0, 1e-9)
   }
 
-  // ── learn / distributionFor ────────────────────────────────────────────────
-
   test("learn then distributionFor returns distribution for known context") {
     val text  = "le chat mange le fromage le chat dort"
     val model = LanguageModel.learn(text, n = 2)
     val dist  = LanguageModel.distributionFor(model, List("le", "chat"))
     assert(dist.isDefined)
-    // "le chat" est suivi de "mange" et de "dort"
     val d = dist.get
     assert(d.contains("mange"))
     assert(d.contains("dort"))
@@ -106,11 +95,8 @@ class LanguageModelSpec extends munit.FunSuite:
     val model = LanguageModel.learn(text, n = 1)
     val dist  = LanguageModel.distributionFor(model, List("b"))
     assert(dist.isDefined)
-    // "b" est suivi de "c" 2 fois, rien d'autre
     assertEqualsDouble(dist.get("c"), 1.0, 1e-9)
   }
-
-  // ── topNWords ──────────────────────────────────────────────────────────────
 
   test("topNWords returns n most frequent words") {
     val text   = "le chat mange le fromage le chat dort"
